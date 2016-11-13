@@ -1,17 +1,16 @@
 # coding=GBK
-'''
+"""
 Created on Jul 3, 2016
 
 @author: stanley
-'''
-import sys
+"""
 import time
 
 if __name__ == '__main__':
-    #if len(sys.argv) != 2:
+    # if len(sys.argv) != 2:
     #    print "Usage python main.py data"
     #    sys.exit(-1)
-    #f = open(sys.argv[1], 'r')
+    # f = open(sys.argv[1], 'r')
     f = open("shop_hn_161003.txt", 'r')
 
     line = f.readline()
