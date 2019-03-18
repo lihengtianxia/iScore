@@ -18,7 +18,7 @@ if __name__ == '__main__':
     zero_str = f.read()
     zero_json = json.loads(zero_str)
     zero_list = zero_json['t']['pageContent']
-    testFile = open('zero_list.txt', 'w')
+    testFile = open('zero_list1.txt', 'w')
     for cust in zero_list:
         print cust['businessNo'], cust['custName'], cust['companyName'], cust['companyAddr'] \
             , cust['createTime'], cust['contactsName'], cust['contactsPhone'], cust['contactsRelation'] \
