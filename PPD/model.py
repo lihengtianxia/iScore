@@ -13,23 +13,22 @@ import pickle
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import roc_auc_score
 from importlib import reload
-from matplotlib import pyplot as plt
+
+# from matplotlib import pyplot as plt
 
 _path = r'/Users/stanley/PycharmProjects/iScore/PPD'
 sys.path.append(_path)
 reload(sys)
-
-
 # sys.setdefaultencoding("utf-8")
 
-### 对时间窗口，计算累计产比 ###
+# 对时间窗口，计算累计产比
 def time_window_selection(df, daysCol, time_windows):
-    '''
+    """
     :param df: the dataset containg variabel of days
     :param daysCol: the column of days
     :param time_windows: the list of time window
     :return:
-    '''
+    """
     freq_tw = {}
     for tw in time_windows:
         freq = sum(df[daysCol].apply(lambda x: int(x <= tw)))
@@ -38,9 +37,9 @@ def time_window_selection(df, daysCol, time_windows):
 
 
 def divided_by_zero(nominator, denominator):
-    '''
+    """
     当分母为0时，返回0；否则返回正常值
-    '''
+    """
     if denominator == 0:
         return 0
     else:
@@ -74,11 +73,11 @@ def MakeupRandom(x, sampledList):
 
 
 def Outlier_Dectection(df, x):
-    '''
+    """
     :param df:
     :param x:
     :return:
-    '''
+    """
     p25, p75 = np.percentile(df[x], 25), np.percentile(df[x], 75)
     d = p75 - p25
     upper, lower = p75 + 1.5 * d, p25 - 1.5 * d
@@ -89,8 +88,8 @@ def Outlier_Dectection(df, x):
 ############################################################
 # Step 0: 数据分析的初始工作, 包括读取数据文件、检查用户Id的一致性等#
 ############################################################
-
-folderOfData = '/Users/stanley/PycharmProjects/iScore/PPD/TrainingSet/'
+print("step0")
+folderOfData = '/Users/stanley/PycharmProjects/iScore/PPD/TrainSet/'
 data1 = pd.read_csv(folderOfData + 'PPD_LogInfo_3_1_Training_Set.csv', header=0)
 data2 = pd.read_csv(folderOfData + 'PPD_Training_Master_GBK_3_1_Training_Set.csv', header=0, encoding='gbk')
 data3 = pd.read_csv(folderOfData + 'PPD_Userupdate_Info_3_1_Training_Set.csv', header=0)
@@ -112,6 +111,7 @@ data3_test = pd.merge(left=test_ids, right=data3, on='Idx', how='inner')
 #############################################################################################
 # Step 1: 从PPD_LogInfo_3_1_Training_Set &  PPD_Userupdate_Info_3_1_Training_Set数据中衍生特征#
 #############################################################################################
+print("step1")
 # compare whether the four city variables match
 data2_train['city_match'] = data2_train.apply(
     lambda x: int(x.UserInfo_2 == x.UserInfo_4 == x.UserInfo_8 == x.UserInfo_20), axis=1)
@@ -245,8 +245,8 @@ col_most_values_df.columns = ['max percent']
 col_most_values_df = col_most_values_df.sort_values(by='max percent', ascending=False)
 pcnt = list(col_most_values_df[:500]['max percent'])
 vars = list(col_most_values_df[:500].index)
-plt.bar(range(len(pcnt)), height=pcnt)
-plt.title('Largest Percentage of Single Value in Each Variable')
+# plt.bar(range(len(pcnt)), height=pcnt)
+# plt.title('Largest Percentage of Single Value in Each Variable')
 
 # 计算多数值占比超过90%的字段中，少数值的坏样本率是否会显著高于多数值
 large_percent_cols = list(col_most_values_df[col_most_values_df['max percent'] >= 0.9].index)
@@ -262,7 +262,7 @@ for col in large_percent_cols:
     bad_rate_diff[col] = np.log(bad_rate.iloc[0]['target'] / bad_rate.iloc[1]['target'])
 bad_rate_diff_sorted = sorted(bad_rate_diff.items(), key=lambda x: x[1], reverse=True)
 bad_rate_diff_sorted_values = [x[1] for x in bad_rate_diff_sorted]
-plt.bar(x=range(len(bad_rate_diff_sorted_values)), height=bad_rate_diff_sorted_values)
+# plt.bar(x=range(len(bad_rate_diff_sorted_values)), height=bad_rate_diff_sorted_values)
 
 # 由于所有的少数值的坏样本率并没有显著高于多数值，意味着这些变量可以直接剔除
 for col in large_percent_cols:
@@ -426,7 +426,7 @@ feature_importance = best_xgb.feature_importances_
 # 利用特征重要性筛去一部分无用的变量
 X_train_temp = X_train.copy()
 features_in_model = all_features
-while (min(feature_importance) < 0.00001):
+while min(feature_importance) < 0.00001:
     features_in_model = [features_in_model[i] for i in range(len(feature_importance)) if
                          feature_importance[i] > 0.00001]
     X_train_temp = X_train_temp[features_in_model]
