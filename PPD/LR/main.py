@@ -303,7 +303,8 @@ for col in numerical_var:
         print('we delete variable {} because of its high missing rate'.format(col))
     else:
         if missingRate > 0:
-            not_missing = allData.loc[allData[col] == allData[col]][col] #TODO why
+            print('col')
+            not_missing = allData.loc[allData[col] == allData[col]][col] #ps: np.nan ==np.nan is False
             # makeuped = allData[col].map(lambda x: MakeupRandom(x, list(not_missing)))
             missing_position = allData.loc[allData[col] != allData[col]][col].index
             not_missing_sample = random.sample(list(not_missing), len(missing_position))

@@ -12,10 +12,13 @@ label = iris.target[:100]
 print(label)
 
 import pandas as pd
-df = pd.read_csv('var_label.csv')
+
+df = pd.read_csv(r'E:\06-Workspace\071-PyPrj\iScore\test\var_label.txt')
 data = df.iloc[:, 2:44]
-#data = np.array(df.iloc[:, 2:44])
-label = df['tag']
+# data = np.array(df.iloc[:, 2:44])
+label = df['label']
+
+data.rename(columns=lambda x: ("var_" + x), inplace=True)
 
 from sklearn.model_selection import train_test_split
 
@@ -60,7 +63,7 @@ ypred_leaf = bst.predict(dtest, pred_leaf=True)
 ypred_contribs = bst.predict(dtest, pred_contribs=True)
 gv = xgb.to_graphviz(bst, num_trees=1)
 # 可视化第一棵树的生成情况)
-#gv.render('output-graph.gv', view=True)
+# gv.render('output-graph.gv', view=True)
 
 # 直接输出模型的迭代工程
 bst.dump_model("model.txt")
