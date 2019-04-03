@@ -11,19 +11,25 @@ print(data.shape)
 label = iris.target[:100]
 print(label)
 
+import pandas as pd
+df = pd.read_csv('var_label.csv')
+data = df.iloc[:, 2:44]
+#data = np.array(df.iloc[:, 2:44])
+label = df['tag']
+
 from sklearn.model_selection import train_test_split
 
 train_x, test_x, train_y, test_y = train_test_split(data, label, random_state=0)
 
 import xgboost as xgb
 
-dtrain = xgb.DMatrix(train_x, label=train_y)
-dtest = xgb.DMatrix(test_x)
+dtrain = xgb.DMatrix(data, label=label)
+dtest = xgb.DMatrix(label)
 
 params = {'booster': 'gbtree',
           'objective': 'binary:logistic',
           'eval_metric': 'auc',
-          'max_depth': 4,
+          'max_depth': 2,
           'lambda': 10,
           'subsample': 0.75,
           'colsample_bytree': 0.75,
@@ -34,9 +40,9 @@ params = {'booster': 'gbtree',
           'silent': 1}
 
 watchlist = [(dtrain, 'train')]
-bst = xgb.train(params, dtrain, num_boost_round=5, evals=watchlist)
+bst = xgb.train(params, dtrain, num_boost_round=1000, evals=watchlist)
 # 输出概率
-ypred = bst.predict(dtest)
+ypred = bst.predict(label)
 
 # 设置阈值, 输出一些评价指标，选择概率大于0.5的为1，其他为0类
 y_pred = (ypred >= 0.5) * 1
@@ -51,10 +57,10 @@ print('Precesion: %.4f' % metrics.precision_score(test_y, y_pred))
 print(metrics.confusion_matrix(test_y, y_pred))
 
 ypred_leaf = bst.predict(dtest, pred_leaf=True)
-
+ypred_contribs = bst.predict(dtest, pred_contribs=True)
 gv = xgb.to_graphviz(bst, num_trees=1)
 # 可视化第一棵树的生成情况)
-gv.render('output-graph.gv', view=True)
+#gv.render('output-graph.gv', view=True)
 
 # 直接输出模型的迭代工程
 bst.dump_model("model.txt")
